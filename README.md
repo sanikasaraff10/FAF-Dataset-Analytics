@@ -6,4 +6,3 @@ FAF (Forged Alliance Forever) is a gaming community driven project designed to f
 FAF game has a scrapable API tracking every game ever played by a player, and a parseable binary replay of every command issued by each player in every game.
 Our dataset is picked from Kaggle and it was published there by scraping the game data of around 10M FAF games about who played who, on which map, what’s the scoreboard etc.
 There were 5 datasets related to FAF all of which were used for storing data in a central graph database for storing player, game, map, command statistics for analysis purposes.
-![image](https://user-images.githubusercontent.com/78660738/188266169-f729dd24-7ad4-466b-8a09-571638be69bf.png)
