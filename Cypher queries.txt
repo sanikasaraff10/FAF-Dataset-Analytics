@@ -1,0 +1,667 @@
+// Uniqueness constraints 
+
+CREATE CONSTRAINT ON (frequencyratio:FrequencyRatio) ASSERT frequencyratio.FrequencyRatio is UNIQUE;
+
+CREATE CONSTRAINT ON (player:Player) ASSERT player.PlayerId IS UNIQUE; 
+
+CREATE CONSTRAINT ON (game:Game) ASSERT game.GameId is UNIQUE; 
+
+CREATE CONSTRAINT ON (apm:APM) ASSERT apm.IssueAPM is UNIQUE; 
+
+CREATE CONSTRAINT ON (map:Map) ASSERT map.MapId is UNIQUE; 
+
+CREATE CONSTRAINT ON (mapdimension:MapDimension) ASSERT mapdimension.MapDimension is UNIQUE; 
+
+CREATE CONSTRAINT ON (command:Command) ASSERT command.CommandName is UNIQUE; 
+
+CREATE CONSTRAINT ON (commandtype:CommandType) ASSERT commandtype.CommandType is UNIQUE; 
+
+CREATE CONSTRAINT ON (faction:Faction) ASSERT faction.FactionName is UNIQUE; 
+
+CREATE CONSTRAINT ON (iscomputer:IsComputer) ASSERT iscomputer.IsComputer is UNIQUE; 
+
+CREATE CONSTRAINT ON (validity:Validity) ASSERT validity.Validity is UNIQUE; 
+
+CREATE CONSTRAINT ON (featuremod:FeatureMod) ASSERT featuremod.FeatureModName is UNIQUE; 
+
+CREATE CONSTRAINT ON (rating:Rating) ASSERT rating.Rating is UNIQUE; 
+
+CREATE CONSTRAINT ON (team:Team) ASSERT team.TeamId is UNIQUE; 
+
+CREATE CONSTRAINT ON (result:Result) ASSERT result.Result is UNIQUE; 
+
+CREATE CONSTRAINT ON (startdate:StartDate) ASSERT startdate.StartDate is UNIQUE;
+
+CREATE CONSTRAINT ON (startmonth:StartMonth) ASSERT startmonth.StartMonth is UNIQUE;
+
+CREATE CONSTRAINT ON (startyear:StartYear) ASSERT startyear.StartYear is UNIQUE;
+
+
+// 
+
+ 
+
+// Create Player node 
+
+:auto USING PERIODIC COMMIT 500 
+
+LOAD CSV With HEADERS FROM 'file:///player_stats_clean.csv' AS row 
+
+MERGE   
+
+  (player:Player {PlayerId:row.player_id}) 
+
+ON CREATE SET player.Login=row. player_login; 
+
+// 
+
+ 
+
+//Creating Game Node 
+
+:auto USING PERIODIC COMMIT 1000 
+
+LOAD CSV With HEADERS FROM 'file:///player_stats_clean.csv' AS row 
+
+MERGE (game:Game {GameId:row.game_id});
+// 
+
+//Creating Map Node 
+
+:auto USING PERIODIC COMMIT 1000 
+
+LOAD CSV With HEADERS FROM 'file:///player_stats_clean.csv' AS row 
+
+MERGE (map:Map {MapId:row.map_id}) 
+
+    ON CREATE SET map.MapName=row.map_name; 
+
+// 
+
+//Creating Command Node 
+
+:auto USING PERIODIC COMMIT 1000 
+
+LOAD CSV With HEADERS FROM 'file:///janfebmar_combine_clean.csv' AS row 
+
+MERGE (command:Command {CommandName:row.command_name}); 
+
+// 
+
+
+// Create isComputer node 
+
+:auto USING PERIODIC COMMIT 500 
+
+LOAD CSV With HEADERS FROM 'file:///player_stats_clean.csv' AS row 
+
+MERGE   
+
+  (iscomputer: IsComputer {IsComputer:row. player_is_computer}) 
+
+// 
+
+//Creating Faction Node 
+
+:auto USING PERIODIC COMMIT 1000 
+
+LOAD CSV With HEADERS FROM 'file:///player_stats_clean.csv' AS row 
+
+MERGE (faction:Faction {FactionName:row.faction}); 
+
+//  
+
+//Creating Team Node 
+
+:auto USING PERIODIC COMMIT 1000 
+
+LOAD CSV With HEADERS FROM 'file:///player_stats_clean.csv' AS row 
+
+MERGE (team:Team {TeamId:row.player_team}); 
+
+// 
+ 
+//Creating Before Rating Node 
+
+:auto USING PERIODIC COMMIT 1000 
+
+LOAD CSV With HEADERS FROM 'file:///player_stats_clean.csv' AS row 
+
+MERGE (rating:Rating { Rating:row.before_rating }) 
+// 
+
+//Creating Map Width Node 
+
+:auto USING PERIODIC COMMIT 1000 
+
+LOAD CSV With HEADERS FROM 'file:///player_stats_clean.csv' AS row 
+
+MERGE (mapdimension:MapDimension {MapDimension:row.map_width}); 
+
+// 
+
+//Creating Map Height Node 
+
+:auto USING PERIODIC COMMIT 1000 
+
+LOAD CSV With HEADERS FROM 'file:///player_stats_clean.csv' AS row 
+
+MERGE (mapdimension:MapDimension {MapDimension:row.map_height}); 
+
+// 
+
+//Creating Command Type Node 
+
+:auto USING PERIODIC COMMIT 1000 
+
+LOAD CSV With HEADERS FROM 'file:///janfebmar_combine_clean.csv' AS row 
+
+MERGE (commandtype:CommandType {CommandType:row.issue_type}); 
+
+//
+
+//Creating Validity Node 
+
+:auto USING PERIODIC COMMIT 1000 
+
+LOAD CSV With HEADERS FROM 'file:///player_stats_clean.csv' AS row 
+
+MERGE (validity:Validity {Validity:row.game_validity }); 
+
+// 
+
+//Creating Result Node 
+
+:auto USING PERIODIC COMMIT 1000 
+
+LOAD CSV With HEADERS FROM 'file:///player_stats_clean.csv' AS row 
+
+MERGE (result:Result {Result:row.player_result}); 
+
+//
+
+//Creating FeatureMod Node 
+
+:auto USING PERIODIC COMMIT 1000 
+
+LOAD CSV With HEADERS FROM 'file:///player_stats_clean.csv' AS row 
+
+MERGE (featuremod:FeatureMod {FeatureModName:row.game_featuremod_name}); 
+
+//
+
+//Creating Frequency Ratio Node 
+
+:auto USING PERIODIC COMMIT 1000 
+
+LOAD CSV With HEADERS FROM 'file:///issues_stats_clean.csv' AS row 
+
+MERGE (frequencyratio:FrequencyRatio {FrequencyRatio:row.reclaim_ratio_cat}); 
+
+// 
+
+//Creating APM Node 
+
+:auto USING PERIODIC COMMIT 1000 
+
+LOAD CSV With HEADERS FROM 'file:///issues_stats_clean.csv' AS row 
+
+MERGE (apm:APM {IssueAPM:row.issue_apm_cat}); 
+
+// 
+
+//Creating After Rating Node 
+
+:auto USING PERIODIC COMMIT 1000 
+
+LOAD CSV With HEADERS FROM 'file:///player_stats_clean.csv' AS row 
+
+MERGE (rating:Rating { Rating:row.after_rating }) 
+// 
+
+//Creating Start Date Node 
+
+:auto USING PERIODIC COMMIT 1000 
+
+LOAD CSV With HEADERS FROM 'file:///player_stats_clean.csv' AS row 
+
+MERGE (startdate:StartDate { Startdate:row.start_date }) 
+//
+
+//Creating Start Month Node 
+
+:auto USING PERIODIC COMMIT 1000 
+
+LOAD CSV With HEADERS FROM 'file:///player_stats_clean.csv' AS row 
+
+MERGE (startmonth:StartMonth { StartMonth:row.start_month }) 
+//
+
+//Creating Start Year Node 
+
+:auto USING PERIODIC COMMIT 1000 
+
+LOAD CSV With HEADERS FROM 'file:///player_stats_clean.csv' AS row 
+
+MERGE (startyear:StartYear { StartYear:row.start_year }) 
+//
+n
+
+
+
+
+
+Relations 
+
+//  
+
+:auto USING PERIODIC COMMIT 500 
+
+LOAD CSV With HEADERS FROM 'file:///player_stats_clean.csv' AS row 
+
+     MATCH (player:Player {PlayerId:row.player_id}) 
+
+     MATCH (game:Game {GameId:row.game_id}) 
+
+     MERGE (player)-[:PLAYS]->(game); 
+
+// 
+
+
+//  
+
+:auto USING PERIODIC COMMIT 500 
+
+LOAD CSV With HEADERS FROM 'file:///janfebmar_combine_clean.csv' AS row 
+
+     MATCH (player:Player {PlayerId:row.player_id}) 
+
+     MATCH (command:Command {CommandName:row.command_name}) 
+
+     MERGE (player)-[:ISSUES]->(command); 
+
+// 
+
+ 
+
+//  
+
+:auto USING PERIODIC COMMIT 500 
+
+LOAD CSV With HEADERS FROM 'file:///janfebmar_combine_clean.csv' AS row 
+
+     MATCH (game:Game {GameId:row.game_id}) 
+
+     MATCH (command:Command {CommandName:row.command_name}) 
+
+     MERGE (game)-[:HAS_COMMAND]->(command); 
+
+// 
+
+//  
+
+:auto USING PERIODIC COMMIT 500 
+
+LOAD CSV With HEADERS FROM 'file:///janfebmar_combine_clean.csv' AS row  
+
+     MATCH (command:Command {CommandName:row.command_name}) 
+	 
+	 MATCH (commandtype:CommandType {CommandType:row.issue_type})
+
+     MERGE (command)-[:HAS_TYPE]->(commandtype); 
+
+//
+
+//  
+
+:auto USING PERIODIC COMMIT 500 
+
+LOAD CSV With HEADERS FROM 'file:///player_stats_clean.csv' AS row 
+
+     MATCH (player:Player {PlayerId:row.player_id}) 
+
+     MATCH (team:Team {TeamId:row.player_team}) 
+
+     MERGE (player)-[:BELONGS_TO]->(team); 
+
+// 
+
+ 
+	
+
+//  
+
+:auto USING PERIODIC COMMIT 500 
+
+LOAD CSV With HEADERS FROM 'file:///player_stats_clean.csv' AS row 
+
+     MATCH (game:Game {GameId:row.game_id}) 
+
+     MATCH (map:Map {MapId:row.map_id}) 
+
+     MERGE (game)-[:PLAYED_ON]->(map); 
+
+// 
+
+
+//  
+
+:auto USING PERIODIC COMMIT 500 
+
+LOAD CSV With HEADERS FROM 'file:///player_stats_clean.csv' AS row 
+
+     MATCH (player:Player {PlayerId:row.player_id}) 
+
+     MATCH (faction:Faction {FactionName:row.faction}) 
+
+     MERGE (player)-[:IS_OF]->(faction); 
+
+// 
+
+//  
+
+:auto USING PERIODIC COMMIT 500 
+
+LOAD CSV With HEADERS FROM 'file:///player_stats_clean.csv' AS row 
+
+     MATCH (player:Player {PlayerId:row.player_id}) 
+
+     MATCH (iscomputer:IsComputer {IsComputer:row.player_is_computer}) 
+
+     MERGE (player)-[:IS_COMPUTER]->(iscomputer); 
+
+//
+
+//  
+
+:auto USING PERIODIC COMMIT 500 
+
+LOAD CSV With HEADERS FROM 'file:///player_stats_clean.csv' AS row 
+
+     MATCH (game:Game {GameId:row.game_id}) 
+
+     MATCH (featuremod:FeatureMod {FeatureModName:row.game_featuremod_name}) 
+
+     MERGE (game)-[:HAS_MOD]->(featuremod); 
+
+//
+
+//  
+
+:auto USING PERIODIC COMMIT 500 
+
+LOAD CSV With HEADERS FROM 'file:///player_stats_clean.csv' AS row 
+
+     MATCH (game:Game {GameId:row.game_id}) 
+
+     MATCH (validity:Validity {Validity:row.game_validity}) 
+
+     MERGE (game)-[:HAS_VALIDITY]->(validity); 
+
+//
+
+//  
+
+:auto USING PERIODIC COMMIT 500 
+
+LOAD CSV With HEADERS FROM 'file:///player_stats_clean.csv' AS row 
+
+     MATCH (game:Game {GameId:row.game_id}) 
+
+     MATCH (startdate:StartDate {Startdate:row.start_date}) 
+
+     MERGE (game)-[:STARTS_ON]->(startdate); 
+
+//
+
+//  
+
+:auto USING PERIODIC COMMIT 500 
+
+LOAD CSV With HEADERS FROM 'file:///player_stats_clean.csv' AS row 
+
+     MATCH (game:Game {GameId:row.game_id}) 
+
+     MATCH (startmonth:StartMonth {StartMonth:row.start_month}) 
+
+     MERGE (game)-[:HAS_START_MONTH]->(startmonth); 
+
+//
+
+//  
+
+:auto USING PERIODIC COMMIT 500 
+
+LOAD CSV With HEADERS FROM 'file:///player_stats_clean.csv' AS row 
+
+     MATCH (game:Game {GameId:row.game_id}) 
+
+     MATCH (startyear:StartYear {StartYear:row.start_year}) 
+
+     MERGE (game)-[:HAS_START_YEAR]->(startyear); 
+
+//
+
+//  
+
+:auto USING PERIODIC COMMIT 500 
+
+LOAD CSV With HEADERS FROM 'file:///player_stats_clean.csv' AS row 
+
+     MATCH (player:Player {PlayerId:row.player_id})
+
+     MATCH (rating:Rating {Rating:row.after_rating}) 
+
+     MERGE (player)-[:HAS_AFTER_RATING]->(rating); 
+
+// 
+
+	
+
+//  
+
+:auto USING PERIODIC COMMIT 500 
+
+LOAD CSV With HEADERS FROM 'file:///player_stats_clean.csv' AS row 
+
+     MATCH (player:Player {PlayerId:row.player_id}) 
+
+     MATCH (map:Map {MapId:row.map_id}) 
+
+     MERGE (player)-[:PLAYS_ON]->(map); 
+
+// 
+ 
+//  
+
+:auto USING PERIODIC COMMIT 500 
+
+LOAD CSV With HEADERS FROM 'file:///player_stats_clean.csv' AS row 
+
+     MATCH (player:Player {PlayerId:row.player_id}) 
+
+     MATCH (result:Result {Result:row.player_result}) 
+
+     MERGE (player)-[:HAS_OUTCOME]->(result); 
+
+// 
+
+//  
+
+:auto USING PERIODIC COMMIT 500 
+
+LOAD CSV With HEADERS FROM 'file:///player_stats_clean.csv' AS row 
+
+     MATCH (player:Player {PlayerId:row.player_id}) 
+
+     MATCH (rating:Rating {Rating:row.before_rating}) 
+
+     MERGE (player)-[:HAS_BEFORE_RATING]->(rating); 
+
+// 
+
+
+
+//  
+
+:auto USING PERIODIC COMMIT 500 
+
+LOAD CSV With HEADERS FROM 'file:///issues_stats_clean.csv' AS row 
+
+     MATCH (player:Player {PlayerId:row.player_id}) 
+
+     MATCH (frequencyratio:FrequencyRatio {FrequencyRatio:row.transport_ratio_cat})
+
+     MERGE (player)-[:TRANSPORTS]->(frequencyratio); 
+
+// 
+
+
+
+ 
+
+//  
+
+:auto USING PERIODIC COMMIT 500 
+
+LOAD CSV With HEADERS FROM 'file:///issues_stats_clean.csv' AS row 
+
+     MATCH (player:Player {PlayerId:row.player_id}) 
+
+     MATCH (frequencyratio:FrequencyRatio {FrequencyRatio:row.reclaim_ratio_cat}) 
+
+     MERGE (player)-[:RECLAIMS]->(frequencyratio); 
+
+// 
+
+//  
+
+:auto USING PERIODIC COMMIT 500 
+
+LOAD CSV With HEADERS FROM 'file:///issues_stats_clean.csv' AS row 
+
+     MATCH (player:Player {PlayerId:row.player_id}) 
+
+     MATCH (apm:APM {IssueAPM:row.issue_apm_cat}) 
+
+     MERGE (player)-[:HAS_APM]->(apm); 
+
+// 
+
+//  
+
+:auto USING PERIODIC COMMIT 500 
+
+LOAD CSV With HEADERS FROM 'file:///player_stats_clean.csv' AS row 
+
+     MATCH (map:Map {MapId:row.map_id}) 
+
+     MATCH (mapdimension:MapDimension {MapDimension:row.map_height}) 
+
+     MERGE (map)-[:HAS_HEIGHT]->(mapdimension); 
+
+// 
+
+//  
+
+:auto USING PERIODIC COMMIT 500 
+
+LOAD CSV With HEADERS FROM 'file:///player_stats_clean.csv' AS row 
+
+     MATCH (map:Map {MapId:row.map_id}) 
+
+     MATCH (mapdimension:MapDimension {MapDimension:row.map_width}) 
+
+     MERGE (map)-[:HAS_WIDTH]->(mapdimension); 
+
+// 
+
+
+//  
+
+:auto USING PERIODIC COMMIT 500 
+
+LOAD CSV With HEADERS FROM 'file:///player_stats_clean.csv' AS row 
+
+
+     MATCH (rating:Rating {Rating:row.before_rating}) 
+
+     MATCH (game:Game {GameId:row.game_id}) 
+
+     MERGE (rating)-[:RATED_BEFORE]->(game); 
+
+// 
+
+//  
+
+:auto USING PERIODIC COMMIT 500 
+
+LOAD CSV With HEADERS FROM 'file:///player_stats_clean.csv' AS row 
+
+
+     MATCH (rating:Rating {Rating:row.after_rating}) 
+
+     MATCH (game:Game {GameId:row.game_id}) 
+
+     MERGE (rating)-[:RATED_AFTER]->(game); 
+
+// 
+
+
+//  
+
+:auto USING PERIODIC COMMIT 500 
+
+LOAD CSV With HEADERS FROM 'file:///player_stats_clean.csv' AS row 
+
+
+     MATCH (start:Rating {Rating:row.after_rating}) 
+
+     MATCH (game:Game {GameId:row.game_id}) 
+
+     MERGE (rating)-[:RATED_AFTER]->(game); 
+
+// 
+
+
+
+
+
+
+//
+MATCH (game:Game)
+SET game.GameId = toInteger(game.GameId)
+//
+
+
+
+
+
+ 
+
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
